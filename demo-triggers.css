@@ -1,0 +1,255 @@
+.demo-trigger-root {
+  position: fixed;
+  right: max(14px, env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  z-index: 99999;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+  color: #3f3032;
+  pointer-events: none;
+}
+
+.demo-trigger-toggle {
+  min-width: 92px;
+  height: 48px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  box-sizing: border-box;
+  color: #fff;
+  background: linear-gradient(145deg, #ff7f9d 0%, #e94f78 52%, #a85aff 100%);
+  box-shadow: 0 16px 36px rgba(139, 57, 94, .30), 0 4px 12px rgba(72, 35, 55, .18);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
+  white-space: nowrap;
+  pointer-events: auto;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.demo-trigger-toggle span { display: block; line-height: 1; }
+
+.demo-trigger-panel {
+  position: absolute;
+  right: 0;
+  bottom: 68px;
+  width: min(330px, calc(100vw - 28px));
+  max-height: min(620px, calc(100vh - 110px));
+  overflow: hidden;
+  border: 1px solid rgba(94, 61, 71, .10);
+  border-radius: 26px;
+  background: rgba(255, 252, 250, .96);
+  box-shadow: 0 22px 58px rgba(68, 41, 50, .24);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  pointer-events: auto;
+  transform: translateY(10px) scale(.98);
+  transform-origin: right bottom;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .18s ease, transform .18s ease, visibility .18s ease;
+}
+
+.demo-trigger-root.is-open .demo-trigger-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.demo-trigger-head {
+  padding: 16px 16px 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid rgba(108, 77, 88, .09);
+}
+
+.demo-trigger-title { margin: 0; font-size: 16px; line-height: 1.2; font-weight: 850; }
+
+.demo-trigger-close {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(72, 47, 56, .08);
+  color: rgba(63, 48, 50, .74);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.demo-trigger-content { max-height: min(540px, calc(100vh - 188px)); overflow: auto; padding: 12px; }
+.demo-trigger-group + .demo-trigger-group { margin-top: 12px; }
+
+.demo-trigger-group h3 {
+  margin: 0 0 8px;
+  padding: 0 4px;
+  font-size: 11px;
+  line-height: 1.2;
+  color: rgba(63, 48, 50, .56);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.demo-trigger-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+
+.demo-trigger-action {
+  min-height: 50px;
+  border: 1px solid rgba(117, 80, 92, .10);
+  border-radius: 16px;
+  background: #fff;
+  color: #4b383d;
+  text-align: left;
+  padding: 10px 11px;
+  box-shadow: 0 5px 14px rgba(65, 38, 48, .055);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.demo-trigger-action:active { transform: translateY(1px); }
+.demo-trigger-action b { display: block; font-size: 12px; line-height: 1.15; font-weight: 820; }
+.demo-trigger-action.is-primary { color: #fff; background: linear-gradient(145deg, #f66f91, #b86dff); border-color: transparent; }
+
+@media (max-width: 430px) {
+  .demo-trigger-root { right: 12px; bottom: 14px; }
+  .demo-trigger-toggle { min-width: 88px; height: 46px; padding: 0 16px; }
+  .demo-trigger-panel { bottom: 62px; }
+}
+
+
+.air2-event-overlay {
+  display: grid;
+  place-items: center;
+  background: rgba(34, 20, 27, .50);
+}
+
+.air2-leak-guide {
+  position: relative;
+  width: min(326px, calc(100vw - 48px));
+  padding: 28px 24px 24px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, #fff8f4 0%, #fff 100%);
+  box-shadow: 0 22px 52px rgba(44, 26, 34, .25);
+  text-align: center;
+}
+
+.air2-leak-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(74, 47, 57, .08);
+  color: rgba(63, 48, 50, .72);
+  font-size: 20px;
+}
+
+.air2-leak-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin: 2px auto 14px;
+  border-radius: 999px;
+  box-sizing: border-box;
+  color: #fff;
+  background: linear-gradient(145deg, #ff885f, #e94f78);
+  font-weight: 900;
+}
+
+.air2-leak-guide h2 {
+  margin: 0 0 10px;
+  color: #3f3032;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.air2-leak-guide p {
+  margin: 0;
+  color: rgba(63, 48, 50, .68);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.air2-leak-primary {
+  width: 100%;
+  height: 48px;
+  margin-top: 22px;
+  border: 0;
+  border-radius: 999px;
+  box-sizing: border-box;
+  color: #fff;
+  background: linear-gradient(180deg, #75001f, #bd5a62);
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.air2-event-toast {
+  position: absolute;
+  z-index: 80;
+  right: 18px;
+  bottom: 96px;
+  left: 18px;
+  padding: 13px 15px;
+  border-radius: 18px;
+  color: #fff;
+  background: rgba(53, 35, 43, .92);
+  box-shadow: 0 14px 34px rgba(36, 20, 28, .28);
+  animation: air2-toast-in .22s ease both;
+}
+
+.air2-event-toast b {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.air2-event-toast span {
+  display: block;
+  color: rgba(255,255,255,.82);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+@keyframes air2-toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+.air2-home-toast {
+  position: absolute;
+  z-index: 80;
+  right: 18px;
+  bottom: 96px;
+  left: 18px;
+  padding: 13px 15px;
+  border-radius: 18px;
+  color: #fff;
+  background: rgba(53, 35, 43, .92);
+  box-shadow: 0 14px 34px rgba(36, 20, 28, .28);
+  animation: air2-toast-in .22s ease both;
+}
+
+.air2-home-toast b {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.air2-home-toast span {
+  display: block;
+  color: rgba(255,255,255,.82);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+#demo .v4-control:not(.has-c36-notice)::before {
+  display: none !important;
+}
