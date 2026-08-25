@@ -1,12 +1,12 @@
 (function () {
-  if (window.Air2DemoTriggers && window.Air2DemoTriggers.version === 26) return;
+  if (window.Air2DemoTriggers && window.Air2DemoTriggers.version === 37) return;
   var CAP = 6.09;
   var BASE_FLOW = 0.002 * 28.3495;
   var DEMO_MILK_ACCEL = 14;
   var LETDOWN_STEP_MS = 650;
   var SWITCH_CONFIRM_MS = 1200;
   var END_CONFIRM_MS = 1200;
-  var toastCopy = 'There was a slight air leak during your last pumping session. We automatically compensated for it. Next time, please check the fit before pumping. See you next time.';
+  var toastCopy = 'Slight air leak detected. Air 2 compensated automatically. Check the fit next time.';
   var fitTimers = [];
   var triggers = [
     ['air-leak','Air leak',true,'air-leak'],
@@ -19,7 +19,8 @@
   ];
   function st(){ return (typeof state !== 'undefined') ? state : (window.state || null); }
   function clearFit(){ for(var i=0;i<fitTimers.length;i++) clearTimeout(fitTimers[i]); fitTimers=[]; }
-  function paint(){ if(typeof window.v4View==='function') window.v4View(); else if(typeof window.view==='function') window.view(); sync(); }
+  function patchNotice(){ var s=st(), p=document.querySelector('#demo .c36-critical-battery p')||document.querySelector('#demo .c36-notice p'); if(s&&s.controlNotice&&p) p.textContent=s.controlNotice.text||''; }
+  function paint(){ if(typeof window.v4View==='function') window.v4View(); else if(typeof window.view==='function') window.view(); patchNotice(); sync(); }
   function notify(s,k,t,persist){ s.controlNotice={kind:k,text:t,id:Date.now(),persistent:!!persist}; if(!persist){ setTimeout(function(){ if(s.controlNotice&&s.controlNotice.id&&s.controlNotice.kind===k){ s.controlNotice=null; paint(); } },5000); } }
   function isActive(s){ return !!(s && s.running && !s.modal); }
   function ignored(s,id){ s.lastIgnoredTrigger=id+' requires active pumping'; sync(); return false; }
@@ -55,11 +56,17 @@
     window.air2FlowAt=function(){ return flowNow(st()); };
     window.air2PaintRun=physics;
   }
-  function fitOk(){ var s=st(); if(!s) return false; if(s.modal==='fit'){ clearFit(); s.fitAdjust=false; s.fitStage=3; paint(); fitTimers.push(setTimeout(function(){s.fitStage=4;paint();},650)); fitTimers.push(setTimeout(function(){s.fitStage=5;paint();},1300)); fitTimers.push(setTimeout(function(){s.fitStage=6;paint();},1900)); fitTimers.push(setTimeout(function(){beginSession(s);paint();},2500)); return true; } if(s.paused&&(s.severeLeak||s.leakAdjusting)){ s.severeLeak=false; s.leakAdjusting=false; s.leakSide=null; s.paused=false; s.air2LastPhysicsAt=Date.now(); s.controlNotice={kind:'leak',phase:'recovered',text:'Suction pressure normal',id:Date.now()}; paint(); setTimeout(function(){ var c=st(); if(c&&c.controlNotice&&c.controlNotice.kind==='leak'&&c.controlNotice.phase==='recovered'){ c.controlNotice={kind:'leak',phase:'closing-recovered',text:'Suction pressure normal',id:c.controlNotice.id}; paint(); } },2800); setTimeout(function(){ var c=st(); if(c&&c.controlNotice&&c.controlNotice.kind==='leak'){ c.controlNotice=null; paint(); } },3200); return true; } return false; }
-  function trigger(id){ var s=st(); if(!s) return false; s.lastIgnoredTrigger=''; if(id==='fit-ok') return fitOk(); if(!isActive(s)) return ignored(s,id); if(id==='letdown-start'){ s.letdownPhase='rising'; s.letdownEventAt=Date.now(); s.letdownStableSince=null; s.noMilkSince=null; paint(); return true; } if(id==='letdown-end'){ s.letdownPhase='falling'; s.letdownEventAt=Date.now(); s.noMilkSince=null; s.manualEndSuggestionShown=false; paint(); return true; } if(id==='air-leak'){ s.paused=true; s.severeLeak=true; s.leakSide='r'; s.leakAdjusting=true; s.flowRate=0; s.flowKind='paused'; s.controlNotice={kind:'leak',phase:'warning',text:'Air leak detected',id:Date.now()}; paint(); return true; } if(id==='low-battery'){ s.batteryL=12; s.batteryR=10; notify(s,'low-battery','Battery is running low. You can finish this session, then charge Air 2 soon.',false); paint(); return true; } if(id==='critical-battery'){ s.batteryL=3; s.batteryR=2; notify(s,'low-battery','Battery is critically low. Please charge Air 2 now.',false); paint(); return true; } if(id==='minor-leak'){ s.microLeakDuringSession=true; return true; } return false; }
-  function showMicroLeakToastAfterHome(){ setTimeout(function(){ var c=st(); if(!c) return; if(c.page==='control'||c.modal){ showMicroLeakToastAfterHome(); return; } c.pendingMicroLeakToast=true; c.microLeakDuringSession=false; paint(); setTimeout(function(){ var a=st(); if(!a) return; a.pendingMicroLeakToast=false; paint(); },5000); },180); }
+  function fitOk(){ var s=st(); if(!s) return false; if(s.modal==='fit'){ clearFit(); s.fitAdjust=false; s.fitStage=3; paint(); fitTimers.push(setTimeout(function(){s.fitStage=4;paint();},650)); fitTimers.push(setTimeout(function(){s.fitStage=5;paint();},1300)); fitTimers.push(setTimeout(function(){s.fitStage=6;paint();},1900)); fitTimers.push(setTimeout(function(){beginSession(s);paint();},2500)); return true; } if(s.paused&&(s.severeLeak||s.leakAdjusting)){ s.severeLeak=false; s.leakAdjusting=false; s.leakSide=null; s.paused=false; s.air2LastPhysicsAt=Date.now(); s.controlNotice=null; paint(); setTimeout(function(){ var c=st(); if(!c) return; c.controlNotice={kind:'leak',phase:'recovered',text:'Suction pressure normal',id:Date.now()}; paint(); },160); setTimeout(function(){ var c=st(); if(c&&c.controlNotice&&c.controlNotice.kind==='leak'&&c.controlNotice.phase==='recovered'){ c.controlNotice={kind:'leak',phase:'closing-recovered',text:'Suction pressure normal',id:c.controlNotice.id}; paint(); } },2960); setTimeout(function(){ var c=st(); if(c&&c.controlNotice&&c.controlNotice.kind==='leak'){ c.controlNotice=null; paint(); } },3320); return true; } return false; }
+  function criticalBattery(){ var s=st(), left=5, start=Date.now(); if(!s) return false; s.batteryL=3; s.batteryR=2; s.air2ShutdownAfterSave=true; s.air2CriticalBatteryActive=true; s.air2AutoSubmitPending=false; s.air2AutoSubmitCancelled=true; function setText(text){ var c=st(); if(!c||!c.air2CriticalBatteryActive) return; c.controlNotice={kind:'critical-battery',text:text,id:Date.now(),startedAt:start,duration:6500,backdrop:true,steady:true}; paint(); setTimeout(patchNotice,30); } function tick(){ if(left>=1){ setText('Battery is too low for this session. It will save and shut down in '+left+'s.'); left-=1; setTimeout(tick,1000); return; } setText('Please charge, see you later.'); setTimeout(function(){ var a=st(); if(!a) return; a.air2CriticalBatteryActive=false; a.controlNotice=null; captureSession(a); resetBasePlan(a); a.running=false; a.paused=false; a.modal='log'; a.air2SessionEnded=true; a.air2AutoSubmitPending=true; a.air2AutoSubmitCancelled=false; paint(); },1200); } tick(); return true; }
+
+  function trigger(id){ var s=st(); if(!s) return false; s.lastIgnoredTrigger=''; if(id==='fit-ok') return fitOk(); if(!isActive(s)) return ignored(s,id); if(id==='letdown-start'){ s.letdownPhase='rising'; s.letdownEventAt=Date.now(); s.letdownStableSince=null; s.noMilkSince=null; paint(); return true; } if(id==='letdown-end'){ s.letdownPhase='falling'; s.letdownEventAt=Date.now(); s.noMilkSince=null; s.manualEndSuggestionShown=false; paint(); return true; } if(id==='air-leak'){ s.paused=true; s.severeLeak=true; s.leakSide='r'; s.leakAdjusting=true; s.flowRate=0; s.flowKind='paused'; s.controlNotice={kind:'leak',phase:'warning',text:'Air leak detected',id:Date.now()}; paint(); return true; } if(id==='low-battery'){ s.batteryL=12; s.batteryR=10; notify(s,'low-battery','Battery is running low. You can finish this session, then charge Air 2 soon.',false); paint(); return true; } if(id==='critical-battery') return criticalBattery(); if(id==='minor-leak'){ s.microLeakDuringSession=true; return true; } return false; }
+  function showMicroLeakToastAfterHome(){ setTimeout(function(){ var c=st(); if(!c) return; if(c.page==='control'||c.modal){ showMicroLeakToastAfterHome(); return; } c.pendingMicroLeakToast=true; c.microLeakDuringSession=false; paint(); setTimeout(function(){ var a=st(); if(!a) return; a.pendingMicroLeakToast=false; paint(); },8000); },180); }
   document.addEventListener('click',function(e){ var save=e.target.closest&&e.target.closest('#demo [data-v4="save"]'), s=st(); if(!save||!s) return; captureSession(s); resetBasePlan(s); if(!s.microLeakDuringSession) return; showMicroLeakToastAfterHome(); },true);
-  function wrapView(){ if(window.__air2TriggerViewWrapped||typeof window.v4View!=='function') return; var old=window.v4View; window.v4View=v4View=function(){ old.apply(this,arguments); var s=st(), root=document.getElementById('demo'); if(!s||!root) return; if(s.pendingMicroLeakToast&&s.page!=='control'&&!s.modal) root.insertAdjacentHTML('beforeend','<div class="air2-home-toast" role="status"><span>'+toastCopy+'</span></div>'); }; window.__air2TriggerViewWrapped=true; }
+  document.addEventListener('click',function(e){ var save=e.target.closest&&e.target.closest('#demo [data-v4="save"]'), s=st(); if(!save||!s||!s.air2ShutdownAfterSave) return; e.preventDefault(); e.stopImmediatePropagation(); captureSession(s); resetBasePlan(s); s.hasLogged=true; s.modal=null; s.page='control'; s.running=false; s.paused=false; s.controlNotice=null; s.air2Offline=true; paint(); },true);
+
+  document.addEventListener('click',function(e){ var exit=e.target.closest&&e.target.closest('[data-air2-offline-exit]'), s=st(); if(!exit||!s) return; e.preventDefault(); e.stopImmediatePropagation(); s.air2Offline=false; s.air2ShutdownAfterSave=false; s.air2CriticalBatteryActive=false; s.controlNotice=null; s.modal=null; s.page='home'; s.running=false; s.paused=false; paint(); },true);
+
+  function wrapView(){ if(window.__air2TriggerViewWrapped||typeof window.v4View!=='function') return; var old=window.v4View; window.v4View=v4View=function(){ old.apply(this,arguments); var s=st(), root=document.getElementById('demo'), screen, n, started, age; if(!s||!root) return; screen=root.querySelector('.v4-control.has-c36-notice'); n=s.controlNotice; if(screen&&n){ if(n.backdrop) screen.classList.add('air2-warm-notice'); started=Number(n.startedAt||n.id||Date.now()); age=Math.max(0,Math.min(5,(Date.now()-started)/1000)); screen.style.setProperty('--notice-age',age.toFixed(3)+'s'); } if(s.air2Offline) root.insertAdjacentHTML('beforeend','<div class="air2-offline-screen" role="status"><button class="air2-offline-exit" type="button" data-air2-offline-exit>×</button><div><b>Device Offline</b><span><i></i>Reconnecting</span></div></div>'); if(s.pendingMicroLeakToast&&s.page!=='control'&&!s.modal) root.insertAdjacentHTML('beforeend','<div class="air2-home-toast" role="status"><span>'+toastCopy+'</span></div>'); }; window.__air2TriggerViewWrapped=true; }
   function sync(){ var b=document.querySelector('[data-demo-trigger-state]'), s=st(); if(b) b.textContent=s?((s.running?(s.paused?'paused':'pumping'):'not pumping')+' · flow '+(((Number(s.flowRate)||0)/28.3495).toFixed(3))+(s.lastIgnoredTrigger?' · '+s.lastIgnoredTrigger:'')):'Waiting for Demo...'; }
   function mount(){
     if(document.querySelector('.demo-trigger-root')) return;
@@ -82,11 +89,20 @@
     document.body.appendChild(host);
     var t=host.querySelector('.demo-trigger-toggle'), x=host.querySelector('.demo-trigger-close');
     function open(v){host.classList.toggle('is-open',v);t.setAttribute('aria-expanded',v?'true':'false');sync();}
-    t.addEventListener('click',function(e){e.preventDefault();open(!host.classList.contains('is-open'));});
+    var drag=null, dragged=false;
+    function place(x,y){ var w=host.offsetWidth||92, h=host.offsetHeight||48; x=Math.max(8,Math.min(window.innerWidth-w-8,x)); y=Math.max(8,Math.min(window.innerHeight-h-8,y)); host.style.left=x+'px'; host.style.top=y+'px'; host.style.right='auto'; host.style.bottom='auto'; }
+    function dragStart(e){ if(e.button!=null&&e.button!==0) return; var r=host.getBoundingClientRect(); drag={id:e.pointerId,x:e.clientX,y:e.clientY,left:r.left,top:r.top}; dragged=false; t.setPointerCapture&&t.setPointerCapture(e.pointerId); }
+    function dragMove(e){ if(!drag||e.pointerId!==drag.id) return; var dx=e.clientX-drag.x, dy=e.clientY-drag.y; if(Math.abs(dx)+Math.abs(dy)>4) dragged=true; if(dragged){ e.preventDefault(); place(drag.left+dx,drag.top+dy); } }
+    function dragEnd(e){ if(drag&&e.pointerId===drag.id){ drag=null; setTimeout(function(){dragged=false;},0); } }
+    t.addEventListener('pointerdown',dragStart);
+    t.addEventListener('pointermove',dragMove);
+    t.addEventListener('pointerup',dragEnd);
+    t.addEventListener('pointercancel',dragEnd);
+    t.addEventListener('click',function(e){e.preventDefault(); if(dragged) return; open(!host.classList.contains('is-open'));});
     x.addEventListener('click',function(e){e.preventDefault();open(false);});
     host.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-demo-trigger]'); if(!b) return; e.preventDefault(); trigger(b.getAttribute('data-demo-trigger'));});
     sync();
   }
-  function boot(){ install(); wrapView(); mount(); window.Air2DemoTriggers={version:26,trigger:trigger,list:function(){return triggers;},sync:sync}; }
+  function boot(){ install(); wrapView(); mount(); window.Air2DemoTriggers={version:37,trigger:trigger,list:function(){return triggers;},sync:sync}; }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot(); setTimeout(boot,700); setTimeout(boot,1800);
 }());

@@ -6,7 +6,10 @@
   font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
   color: #3f3032;
   pointer-events: none;
+  touch-action: none;
+  user-select: none;
 }
+
 
 .demo-trigger-toggle {
   min-width: 92px;
@@ -25,10 +28,12 @@
   letter-spacing: 0;
   white-space: nowrap;
   pointer-events: auto;
-  cursor: pointer;
+  cursor: grab;
+  touch-action: none;
   -webkit-tap-highlight-color: transparent;
 }
 
+.demo-trigger-toggle:active { cursor: grabbing; }
 .demo-trigger-toggle span { display: block; line-height: 1; }
 
 .demo-trigger-panel {
@@ -106,7 +111,8 @@
   text-align: left;
   padding: 10px 11px;
   box-shadow: 0 5px 14px rgba(65, 38, 48, .055);
-  cursor: pointer;
+  cursor: grab;
+  touch-action: none;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -226,15 +232,17 @@
 .air2-home-toast {
   position: absolute;
   z-index: 80;
-  right: 18px;
-  bottom: 96px;
-  left: 18px;
-  padding: 13px 15px;
-  border-radius: 18px;
+  top: 50%;
+  left: 50%;
+  width: min(292px, calc(100% - 48px));
+  box-sizing: border-box;
+  padding: 16px 18px;
+  border-radius: 20px;
   color: #fff;
   background: rgba(53, 35, 43, .92);
   box-shadow: 0 14px 34px rgba(36, 20, 28, .28);
-  animation: air2-toast-in .22s ease both;
+  transform: translate(-50%, -50%);
+  animation: air2-toast-center-in .22s ease both;
 }
 
 .air2-home-toast b {
@@ -245,11 +253,97 @@
 
 .air2-home-toast span {
   display: block;
-  color: rgba(255,255,255,.82);
-  font-size: 12px;
-  line-height: 1.35;
+  color: rgba(255,255,255,.9);
+  font-size: 14px;
+  line-height: 1.42;
+  font-weight: 650;
+  text-align: center;
 }
 
 #demo .v4-control:not(.has-c36-notice)::before {
   display: none !important;
+}
+
+#demo .v4-control.has-c36-notice::before {
+  animation-delay: calc(-1 * var(--notice-age, 0s)) !important;
+}
+#demo .v4-control.has-c36-notice .c36-notice {
+  animation-delay: calc(-1 * var(--notice-age, 0s)) !important;
+}
+
+@keyframes air2-toast-center-in {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.air2-offline-screen {
+  position: absolute;
+  z-index: 9998;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 250, 252, .72);
+  backdrop-filter: blur(24px) saturate(.72) brightness(1.08);
+  -webkit-backdrop-filter: blur(24px) saturate(.72) brightness(1.08);
+  color: rgba(36, 15, 27, .76);
+  text-align: center;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+}
+.air2-offline-screen > div { display: grid; gap: 14px; place-items: center; }
+.air2-offline-screen b { font-size: 24px; line-height: 1.2; font-weight: 850; }
+.air2-offline-screen span { display: inline-flex; align-items: center; gap: 8px; color: rgba(36, 15, 27, .56); font-size: 13px; font-weight: 720; }
+.air2-offline-screen i { width: 14px; height: 14px; border: 2px solid rgba(36, 15, 27, .14); border-top-color: rgba(36, 15, 27, .56); border-radius: 50%; animation: air2-spin .8s linear infinite; }
+@keyframes air2-spin { to { transform: rotate(360deg); } }
+
+/* Notification backdrop rules: default capsule notices have no page backdrop. */
+#demo .v4-control.has-c36-notice::before {
+  display: none !important;
+}
+#demo .v4-control.has-c36-notice.air2-warm-notice::before {
+  display: block !important;
+  opacity: 0 !important;
+  animation: air2-notice-backdrop 1s ease both !important;
+  animation-delay: calc(-1 * var(--notice-age, 0s)) !important;
+}
+#demo .v4-control.has-c36-notice.air2-warm-notice .c36-notice {
+  animation-duration: 1s !important;
+  animation-delay: calc(-1 * var(--notice-age, 0s)) !important;
+}
+#demo .v4-control.has-c36-notice.air2-warm-notice .c36-notice p {
+  font-size: 13px !important;
+  line-height: 20px !important;
+}
+@keyframes air2-notice-backdrop {
+  0%, 10% { opacity: 0; }
+  20%, 82% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+#demo .v4-control.air2-warm-notice .c36-critical-battery,
+#demo .v4-control.air2-warm-notice .c36-critical-battery p {
+  opacity: 1 !important;
+}
+#demo .v4-control.air2-warm-notice .c36-critical-battery {
+  animation: none !important;
+  transform: none !important;
+}
+#demo .v4-control.air2-warm-notice:has(.c36-critical-battery)::before {
+  opacity: 1 !important;
+  animation: none !important;
+}
+
+.air2-offline-exit {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255,255,255,.72);
+  color: rgba(36, 15, 27, .72);
+  box-shadow: 0 10px 24px rgba(36,15,27,.10);
+  font-size: 28px;
+  line-height: 40px;
+  cursor: pointer;
 }
