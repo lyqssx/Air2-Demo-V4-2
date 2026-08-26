@@ -19,7 +19,7 @@
   border-radius: 999px;
   box-sizing: border-box;
   color: #fff;
-  background: linear-gradient(145deg, #ff7f9d 0%, #e94f78 52%, #a85aff 100%);
+  background: linear-gradient(145deg, rgba(255, 127, 157, .82) 0%, rgba(233, 79, 120, .82) 52%, rgba(168, 90, 255, .82) 100%);
   box-shadow: 0 16px 36px rgba(139, 57, 94, .30), 0 4px 12px rgba(72, 35, 55, .18);
   display: grid;
   place-items: center;
@@ -45,10 +45,10 @@
   overflow: hidden;
   border: 1px solid rgba(94, 61, 71, .10);
   border-radius: 26px;
-  background: rgba(255, 252, 250, .82);
-  box-shadow: 0 22px 58px rgba(68, 41, 50, .24);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: rgba(255, 252, 250, .24);
+  box-shadow: 0 22px 58px rgba(68, 41, 50, .11);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   pointer-events: auto;
   transform: translateY(10px) scale(.98);
   transform-origin: right bottom;
@@ -106,7 +106,7 @@
   min-height: 50px;
   border: 1px solid rgba(117, 80, 92, .10);
   border-radius: 16px;
-  background: #fff;
+  background: rgba(255, 255, 255, .38);
   color: #4b383d;
   text-align: left;
   padding: 10px 11px;
@@ -118,7 +118,7 @@
 
 .demo-trigger-action:active { transform: translateY(1px); }
 .demo-trigger-action b { display: block; font-size: 12px; line-height: 1.15; font-weight: 820; }
-.demo-trigger-action.is-primary { color: #fff; background: linear-gradient(145deg, #f66f91, #b86dff); border-color: transparent; }
+.demo-trigger-action.is-primary { color: #fff; background: linear-gradient(145deg, rgba(246, 111, 145, .78), rgba(184, 109, 255, .78)); border-color: transparent; }
 
 @media (max-width: 430px) {
   .demo-trigger-root { right: 12px; bottom: 14px; }
